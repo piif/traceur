@@ -1,0 +1,5 @@
+BOARD := MightyCore:avr:644:isp=arduino
+UPLOAD_PORT := /dev/ttyUSB1
+PORT := /dev/ttyUSB0
+LIBRARY_PATH := /home/pif/GitHub/piif/ArduinoTools
+ARDDUDE_OPTIONS := -l lf -o raw -d
