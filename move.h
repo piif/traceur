@@ -7,7 +7,8 @@
 #define MAX_X 500
 #define MAX_Y 500
 
-extern boolean minChanged;
+extern int posX, posY;
+extern int minChanged;
 
 void moveSetup();
 void moveStatus();

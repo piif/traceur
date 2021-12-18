@@ -49,10 +49,14 @@ void moveY(int v) {
 void status() {
 	Serial.print("Speed : "); Serial.println(speed);
 	Serial.print("Delay : "); Serial.println(stepDelay);
-	Serial.print("milli : "); Serial.println(millis());
+	Serial.print("now   : "); Serial.println(micros());
 	Serial.println();
 
 	moveStatus();
+}
+
+void pen(byte v) {
+	analogWrite(USER_3, v);
 }
 
 InputItem inputs[] = {
@@ -64,6 +68,7 @@ InputItem inputs[] = {
 //	{ 'z', 'I', (void *)moveZ },
 //	{ 'e', 'I', (void *)moveE },
 
+	{ 'p', 'B', (void *)pen },
 	{ 'h', 'B', (void *)high },
 	{ 'l', 'B', (void *)low },
 //	{ 'r', 'f', (void *)setRemanent },
@@ -95,7 +100,7 @@ void setup(void) {
 	Serial.println("setup end");
 
 	penUp();
-//	goOrigin();
+	goOrigin();
 }
 
 void loop() {
@@ -108,6 +113,7 @@ void loop() {
 
 	if (minChanged) {
 		status();
+		Serial.println(minChanged);
 		minChanged = 0;
 	}
 	handleInput();

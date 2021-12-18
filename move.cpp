@@ -5,11 +5,27 @@
 #define readMinY() (digitalRead(Y_MIN_PIN) == 0)
 
 Stepper X, Y /*, Z, E*/;
+
 boolean minX = 0, minY = 0;
-boolean minChanged = 0;
-int posX, posY;
+#define BOUNCE_DELAY 2000
+long minXchangeTTL = 0, minYchangeTTL= 0;
+int minChanged = 0;
+
+int posX = MAX_X + 1, posY = MAX_Y + 1;
 
 void moveOf(int dx, int dy) {
+	if (posX + dx < 0) {
+		dx = -posX;
+	} else if (posX + dx > MAX_X) {
+		dx = MAX_X - posX;
+	}
+	if (posY + dy < 0) {
+		dy = -posY;
+	} else if (posY + dy > MAX_Y) {
+		dy = MAX_Y - posY;
+	}
+	posX += dx;
+	posY += dy;
 	stepperMoveOf(&X, &Y, dx, dy);
 	// TODO : add speed + Bresenham
 	while(stepperDoStep(&X, &Y));
@@ -29,20 +45,33 @@ void goOrigin() {
 
 
 void checkMin() {
-	if (readMinX() != minX) {
-		minX = !minX;
-		if (minX == 0) {
-			X.toMove = 0;
+	cli();
+	unsigned long now = micros();
+	if (minXchangeTTL < now) {
+		byte m = readMinX();
+		if (m != minX) {
+			minX = m;
+			if (minX == 1) {
+				X.toMove = 0;
+				posX = 0;
+			}
+			minChanged++;
+			minXchangeTTL = now+BOUNCE_DELAY;
 		}
-		minChanged = 1;
 	}
-	if (readMinY() != minY) {
-		minY = !minY;
-		if (minY == 0) {
-			Y.toMove = 0;
+	if (minYchangeTTL < now) {
+		byte m = readMinY();
+		if (m != minY) {
+			minY = !minY;
+			if (minY == 1) {
+				Y.toMove = 0;
+				posY = 0;
+			}
+			minChanged++;
+			minYchangeTTL = now+BOUNCE_DELAY;
 		}
-		minChanged = 1;
 	}
+	sei();
 }
 
 ISR(X_MIN_PCINT_vect) {
@@ -55,8 +84,8 @@ ISR(Y_MIN_PCINT_vect) {
 //#endif
 
 void moveStatus() {
-	Serial.print("    X : "); Serial.println(X.toMove);
-	Serial.print("    Y : "); Serial.println(Y.toMove);
+	Serial.print("dx, X : "); Serial.print(X.toMove);Serial.print(", ");Serial.println(posX);
+	Serial.print("dy, Y : "); Serial.print(Y.toMove);Serial.print(", ");Serial.println(posY);
 //	Serial.print("    Z : "); Serial.println(Z.toMove);
 //	Serial.print("    E : "); Serial.println(E.toMove);
 	Serial.println();
@@ -82,13 +111,13 @@ void moveSetup() {
 	minY = readMinY();
 
 	X_MIN_PCMSK |= (1 << X_MIN_INTR);
-	Y_MIN_PCMSK |= 0x40; // (1 << Y_MIN_INTR);
+	Y_MIN_PCMSK |= (1 << Y_MIN_INTR);
 	PCICR |= (1 << X_MIN_PCICR) | (1 << Y_MIN_PCICR);
 
-	Serial.print("PCICR  : "); Serial.println(PCICR);
-	Serial.print("PCMSK0 : "); Serial.println(PCMSK0);
-	Serial.print("PCMSK1 : "); Serial.println(PCMSK1);
-	Serial.print("PCMSK2 : "); Serial.println(PCMSK2);
-	Serial.print("PCMSK3 : "); Serial.println(PCMSK3);
+	Serial.print("PCICR  : "); Serial.println(PCICR, HEX);
+	Serial.print("PCMSK0 : "); Serial.println(PCMSK0, HEX);
+	Serial.print("PCMSK1 : "); Serial.println(PCMSK1, HEX);
+	Serial.print("PCMSK2 : "); Serial.println(PCMSK2, HEX);
+	Serial.print("PCMSK3 : "); Serial.println(PCMSK3, HEX);
 }
 

@@ -29,9 +29,9 @@
 // y axes
 #define Y_STEP_PIN 23
 #define Y_DIR_PIN 22
-#define Y_ENABLE_PIN 31 // doc says 24 !
-#define Y_MIN_PIN 30 // PA1 = PCINT1
-#define Y_MIN_INTR  PCINT1
+#define Y_ENABLE_PIN 24
+#define Y_MIN_PIN 30 // PA6 = PCINT6
+#define Y_MIN_INTR  PCINT6
 #define Y_MIN_PCMSK PCMSK0
 #define Y_MIN_PCICR PCIE0
 #define Y_MIN_PCINT_vect PCINT0_vect
