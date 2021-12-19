@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <avr/boot.h>
 #include "serialInput.h"
 #include "pins.h"
 #include "move.h"
@@ -87,7 +88,6 @@ InputItem inputs[] = {
 };
 
 void penUp() {
-
 }
 void penDown() {
 }
@@ -95,18 +95,8 @@ void penDown() {
 void setup(void) {
 	Serial.begin(DEFAULT_BAUDRATE);
 
-	moveSetup();
-	servoSetup(SERVO);
-
-	pinMode(DEBUG_PIN, OUTPUT);
-	digitalWrite(DEBUG_PIN, HIGH);
-
-	registerInput(sizeof(inputs), inputs);
-
-	Serial.println("setup end");
-
-	Serial.print("TCCR0A = "); Serial.println(TCCR0A, HEX); // WGM 3 = fast PWM TOP
-	Serial.print("TCCR0B = "); Serial.println(TCCR0B, HEX); // prescale 3 = /64
+	Serial.print("TCCR0A = "); Serial.println(TCCR0A, HEX); // 3 = WGM 3 = fast PWM TOP
+	Serial.print("TCCR0B = "); Serial.println(TCCR0B, HEX); // 3 = prescale 3 = /64
 	Serial.print("TIMSK0 = "); Serial.println(TIMSK0, HEX); // 1 = OCIE0A
 	Serial.print("OCR0A  = "); Serial.println(OCR0A); //
 	Serial.println();
@@ -115,10 +105,20 @@ void setup(void) {
 	Serial.print("TCCR1C = "); Serial.println(TCCR1C, HEX); // 0
 	Serial.print("TIMSK1 = "); Serial.println(TIMSK1, HEX); // 0
 	Serial.println();
-	Serial.print("TCCR2A = "); Serial.println(TCCR2A, HEX); // 1
-	Serial.print("TCCR2B = "); Serial.println(TCCR2B, HEX); // 4
+	Serial.print("TCCR2A = "); Serial.println(TCCR2A, HEX); // 1 = WGM Phase correct
+	Serial.print("TCCR2B = "); Serial.println(TCCR2B, HEX); // 4 = /64
 	Serial.print("TIMSK2 = "); Serial.println(TIMSK2, HEX); // 0
 	Serial.println();
+
+	moveSetup();
+	servoSetup(12 /*SERVO*/);
+
+	pinMode(DEBUG_PIN, OUTPUT);
+	digitalWrite(DEBUG_PIN, HIGH);
+
+	registerInput(sizeof(inputs), inputs);
+
+	Serial.println("setup end");
 
 	penUp();
 	goOrigin();
