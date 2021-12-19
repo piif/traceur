@@ -1,0 +1,12 @@
+* remettre enable en début/fin de mouvement -> évite des saccades ?
+- gestion du servo
+	- version avec la lib qui va bien pour tester
+	- version manuelle
+- gestion des timers :
+	- voir si on sait modifier setInterval en micros
+	- valider s'il y a un setTimeout
+	- faire une version basée sur un timer interupt ?
+- verifier l'allure des timers du 644 : idem Arduino ?
+  + lesquels sont utilisés par le système (micros/millis, delay)
+  + valider la fréquence d'horloge
+- en fonction des timers réservés, voir quelles pattes sont PWM

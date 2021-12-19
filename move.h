@@ -13,7 +13,7 @@ extern int minChanged;
 void moveSetup();
 void moveStatus();
 
-void moveOf(int dx, int dy) ;
+void moveOf(int dx, int dy, boolean force = false) ;
 
 void goOrigin();
 

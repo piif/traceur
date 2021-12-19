@@ -2,6 +2,7 @@
 #include "serialInput.h"
 #include "pins.h"
 #include "move.h"
+#include "servo.h"
 
 #ifndef DEFAULT_BAUDRATE
 	#define DEFAULT_BAUDRATE 115200
@@ -20,6 +21,7 @@ void blink() {
 }
 
 void high(byte v) {
+	pinMode(v, OUTPUT);
 	digitalWrite(v, HIGH);
 }
 
@@ -50,13 +52,21 @@ void status() {
 	Serial.print("Speed : "); Serial.println(speed);
 	Serial.print("Delay : "); Serial.println(stepDelay);
 	Serial.print("now   : "); Serial.println(micros());
-	Serial.println();
 
+	Serial.println();
+	servoStatus();
+
+	Serial.println();
 	moveStatus();
 }
 
-void pen(byte v) {
-	analogWrite(USER_3, v);
+void pen(int v) {
+	if (v == 0) {
+		servoEnable(0);
+	} else {
+		servoEnable(1);
+	}
+	servoSetMicros(v);
 }
 
 InputItem inputs[] = {
@@ -68,7 +78,7 @@ InputItem inputs[] = {
 //	{ 'z', 'I', (void *)moveZ },
 //	{ 'e', 'I', (void *)moveE },
 
-	{ 'p', 'B', (void *)pen },
+	{ 'p', 'I', (void *)pen },
 	{ 'h', 'B', (void *)high },
 	{ 'l', 'B', (void *)low },
 //	{ 'r', 'f', (void *)setRemanent },
@@ -80,17 +90,13 @@ void penUp() {
 
 }
 void penDown() {
-
 }
 
 void setup(void) {
 	Serial.begin(DEFAULT_BAUDRATE);
-	pinMode(USER_1, OUTPUT);
-	pinMode(USER_2, OUTPUT);
-	pinMode(USER_3, OUTPUT);
-	pinMode(USER_4, OUTPUT);
 
 	moveSetup();
+	servoSetup(SERVO);
 
 	pinMode(DEBUG_PIN, OUTPUT);
 	digitalWrite(DEBUG_PIN, HIGH);
@@ -98,6 +104,21 @@ void setup(void) {
 	registerInput(sizeof(inputs), inputs);
 
 	Serial.println("setup end");
+
+	Serial.print("TCCR0A = "); Serial.println(TCCR0A, HEX); // WGM 3 = fast PWM TOP
+	Serial.print("TCCR0B = "); Serial.println(TCCR0B, HEX); // prescale 3 = /64
+	Serial.print("TIMSK0 = "); Serial.println(TIMSK0, HEX); // 1 = OCIE0A
+	Serial.print("OCR0A  = "); Serial.println(OCR0A); //
+	Serial.println();
+	Serial.print("TCCR1A = "); Serial.println(TCCR1A, HEX); // 1
+	Serial.print("TCCR1B = "); Serial.println(TCCR1B, HEX); // 3
+	Serial.print("TCCR1C = "); Serial.println(TCCR1C, HEX); // 0
+	Serial.print("TIMSK1 = "); Serial.println(TIMSK1, HEX); // 0
+	Serial.println();
+	Serial.print("TCCR2A = "); Serial.println(TCCR2A, HEX); // 1
+	Serial.print("TCCR2B = "); Serial.println(TCCR2B, HEX); // 4
+	Serial.print("TIMSK2 = "); Serial.println(TIMSK2, HEX); // 0
+	Serial.println();
 
 	penUp();
 	goOrigin();

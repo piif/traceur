@@ -15,6 +15,7 @@ void stepperInit(Stepper *s, byte enable_pin, byte dir_pin, byte step_pin) {
 
 void stepperMoveOf(Stepper *s, int v) {
 	digitalWrite(s->dir_pin, (v < 0));
+	digitalWrite(s->enable_pin, 0);
 
 	s->toMove = v;
 }
@@ -22,9 +23,11 @@ void stepperMoveOf(Stepper *s, int v) {
 // to one step , return 1 If a step was needed
 byte stepperDoStep(Stepper *s) {
 	if (s->toMove == 0) {
+		digitalWrite(s->enable_pin, 1);
 		return 0;
 	}
-	digitalWrite(s->enable_pin, 0);
+//	digitalWrite(s->enable_pin, 0);
+//	delay(1);
 
 	digitalWrite(s->step_pin, 1);
 	delay(1);
@@ -38,7 +41,7 @@ byte stepperDoStep(Stepper *s) {
 		s->toMove++;
 	}
 
-	digitalWrite(s->enable_pin, 1);
+//	digitalWrite(s->enable_pin, 1);
 
 	return 1;
 }
@@ -50,6 +53,10 @@ void stepperInit(Stepper *X, Stepper *Y, byte x_enable_pin, byte x_dir_pin, byte
 }
 
 void stepperMoveOf(Stepper *X, Stepper *Y, int dx, int dy) {
+	digitalWrite(X->enable_pin, 0);
+	if (X->enable_pin != Y->enable_pin) {
+		digitalWrite(Y->enable_pin, 0);
+	}
 	stepperMoveOf(X, dx);
 	stepperMoveOf(Y, dy);
 }
@@ -57,6 +64,10 @@ void stepperMoveOf(Stepper *X, Stepper *Y, int dx, int dy) {
 // to one step , return 1 If a step was needed
 byte stepperDoStep(Stepper *X, Stepper *Y) {
 	if (X->toMove == 0 && Y->toMove == 0) {
+		digitalWrite(X->enable_pin, 1);
+		if (X->enable_pin != Y->enable_pin) {
+			digitalWrite(Y->enable_pin, 1);
+		}
 		return 0;
 	}
 	if (X->toMove != 0) {
@@ -83,15 +94,15 @@ byte stepperDoStep(Stepper *X, Stepper *Y) {
 		}
 	}
 
-	digitalWrite(X->enable_pin, 0);
-	if (X->enable_pin != Y->enable_pin) {
-		digitalWrite(Y->enable_pin, 0);
-	}
-	delay(1);
-	digitalWrite(X->enable_pin, 1);
-	if (X->enable_pin != Y->enable_pin) {
-		digitalWrite(Y->enable_pin, 1);
-	}
+//	digitalWrite(X->enable_pin, 0);
+//	if (X->enable_pin != Y->enable_pin) {
+//		digitalWrite(Y->enable_pin, 0);
+//	}
+//	delay(1);
+//	digitalWrite(X->enable_pin, 1);
+//	if (X->enable_pin != Y->enable_pin) {
+//		digitalWrite(Y->enable_pin, 1);
+//	}
 
 	return 1;
 }

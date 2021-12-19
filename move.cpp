@@ -13,19 +13,21 @@ int minChanged = 0;
 
 int posX = MAX_X + 1, posY = MAX_Y + 1;
 
-void moveOf(int dx, int dy) {
-	if (posX + dx < 0) {
-		dx = -posX;
-	} else if (posX + dx > MAX_X) {
-		dx = MAX_X - posX;
+void moveOf(int dx, int dy, boolean force) {
+	if (!force) {
+		if (posX + dx < 0) {
+			dx = -posX;
+		} else if (posX + dx > MAX_X) {
+			dx = MAX_X - posX;
+		}
+		if (posY + dy < 0) {
+			dy = -posY;
+		} else if (posY + dy > MAX_Y) {
+			dy = MAX_Y - posY;
+		}
+		posX += dx;
+		posY += dy;
 	}
-	if (posY + dy < 0) {
-		dy = -posY;
-	} else if (posY + dy > MAX_Y) {
-		dy = MAX_Y - posY;
-	}
-	posX += dx;
-	posY += dy;
 	stepperMoveOf(&X, &Y, dx, dy);
 	// TODO : add speed + Bresenham
 	while(stepperDoStep(&X, &Y));
@@ -33,10 +35,10 @@ void moveOf(int dx, int dy) {
 
 void goOrigin() {
 	if (minX) {
-		moveOf(50, 0);
+		moveOf(50, 0, true);
 	}
 	if (minY) {
-		moveOf(0, 50);
+		moveOf(0, 50, true);
 	}
 	moveOf(-500, -500);
 	posX = 0;
@@ -114,10 +116,6 @@ void moveSetup() {
 	Y_MIN_PCMSK |= (1 << Y_MIN_INTR);
 	PCICR |= (1 << X_MIN_PCICR) | (1 << Y_MIN_PCICR);
 
-	Serial.print("PCICR  : "); Serial.println(PCICR, HEX);
-	Serial.print("PCMSK0 : "); Serial.println(PCMSK0, HEX);
-	Serial.print("PCMSK1 : "); Serial.println(PCMSK1, HEX);
-	Serial.print("PCMSK2 : "); Serial.println(PCMSK2, HEX);
-	Serial.print("PCMSK3 : "); Serial.println(PCMSK3, HEX);
+	moveStatus();
 }
 
