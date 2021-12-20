@@ -49,6 +49,33 @@ void moveY(int v) {
 //	stepperMoveOf(&E, v);
 //}
 
+void penUp() {
+	servoSetMicros(2700);
+	delay(500);
+	servoSetMicros(2600);
+}
+
+void penDown() {
+	servoSetMicros(1800);
+	delay(500);
+}
+
+void drawTest() {
+	penDown();
+
+	moveOf(300, 0);
+	moveOf(0, 300);
+	moveOf(-300, 0);
+	moveOf(0, -300);
+
+	moveOf(300, 300);
+	moveOf(150, -150);
+	moveOf(-150, -150);
+	moveOf(-300, 300);
+
+	penUp();
+}
+
 void status() {
 	Serial.print("Speed : "); Serial.println(speed);
 	Serial.print("Delay : "); Serial.println(stepDelay);
@@ -61,25 +88,23 @@ void status() {
 	moveStatus();
 }
 
-void pen(int v) {
-	if (v == 0) {
-		servoEnable(0);
-	} else {
-		servoEnable(1);
-	}
-	servoSetMicros(v);
+void zero() {
+	penUp();
+	goOrigin();
 }
 
 InputItem inputs[] = {
 	{ '?', 'f', (void *)status },
+	{ 't', 'f', (void *)drawTest },
 
+	{ '0', 'f', (void *)zero },
 	{ 's', 'I', (void *)setSpeed  },
 	{ 'x', 'I', (void *)moveX },
 	{ 'y', 'I', (void *)moveY },
 //	{ 'z', 'I', (void *)moveZ },
 //	{ 'e', 'I', (void *)moveE },
 
-	{ 'p', 'I', (void *)pen },
+	{ 'p', 'I', (void *)servoSetMicros },
 	{ 'h', 'B', (void *)high },
 	{ 'l', 'B', (void *)low },
 //	{ 'r', 'f', (void *)setRemanent },
@@ -87,32 +112,26 @@ InputItem inputs[] = {
 //	{ 'f', 'f', (void *)setFull }
 };
 
-void penUp() {
-}
-void penDown() {
-}
-
 void setup(void) {
 	Serial.begin(DEFAULT_BAUDRATE);
 
-	Serial.print("TCCR0A = "); Serial.println(TCCR0A, HEX); // 3 = WGM 3 = fast PWM TOP
-	Serial.print("TCCR0B = "); Serial.println(TCCR0B, HEX); // 3 = prescale 3 = /64
-	Serial.print("TIMSK0 = "); Serial.println(TIMSK0, HEX); // 1 = OCIE0A
-	Serial.print("OCR0A  = "); Serial.println(OCR0A); //
-	Serial.println();
-	Serial.print("TCCR1A = "); Serial.println(TCCR1A, HEX); // 1
-	Serial.print("TCCR1B = "); Serial.println(TCCR1B, HEX); // 3
-	Serial.print("TCCR1C = "); Serial.println(TCCR1C, HEX); // 0
-	Serial.print("TIMSK1 = "); Serial.println(TIMSK1, HEX); // 0
-	Serial.println();
-	Serial.print("TCCR2A = "); Serial.println(TCCR2A, HEX); // 1 = WGM Phase correct
-	Serial.print("TCCR2B = "); Serial.println(TCCR2B, HEX); // 4 = /64
-	Serial.print("TIMSK2 = "); Serial.println(TIMSK2, HEX); // 0
-	Serial.println();
+//	Serial.print("TCCR0A = "); Serial.println(TCCR0A, HEX); // 3 = WGM 3 = fast PWM TOP
+//	Serial.print("TCCR0B = "); Serial.println(TCCR0B, HEX); // 3 = prescale 3 = /64
+//	Serial.print("TIMSK0 = "); Serial.println(TIMSK0, HEX); // 1 = OCIE0A
+//	Serial.print("OCR0A  = "); Serial.println(OCR0A); //
+//	Serial.println();
+//	Serial.print("TCCR1A = "); Serial.println(TCCR1A, HEX); // 1
+//	Serial.print("TCCR1B = "); Serial.println(TCCR1B, HEX); // 3
+//	Serial.print("TCCR1C = "); Serial.println(TCCR1C, HEX); // 0
+//	Serial.print("TIMSK1 = "); Serial.println(TIMSK1, HEX); // 0
+//	Serial.println();
+//	Serial.print("TCCR2A = "); Serial.println(TCCR2A, HEX); // 1 = WGM Phase correct
+//	Serial.print("TCCR2B = "); Serial.println(TCCR2B, HEX); // 4 = /64
+//	Serial.print("TIMSK2 = "); Serial.println(TIMSK2, HEX); // 0
+//	Serial.println();
 
 	moveSetup();
 
-	pinMode(12, OUTPUT);
 	servoSetup(SERVO);
 
 	pinMode(DEBUG_PIN, OUTPUT);
@@ -122,31 +141,18 @@ void setup(void) {
 
 	Serial.println("setup end");
 
-	penUp();
-	goOrigin();
+	zero();
 
 	Serial.println("init end");
 }
 
 void loop() {
-//	static byte cpt = 0;
-//	digitalWrite(USER_1, (cpt & 8) ? HIGH : LOW);
-//	digitalWrite(USER_2, (cpt & 4) ? HIGH : LOW);
-//	digitalWrite(USER_3, (cpt & 2) ? HIGH : LOW);
-//	digitalWrite(USER_4, (cpt & 1) ? HIGH : LOW);
-//	cpt++;
-
 	if (minChanged) {
 		status();
 		Serial.println(minChanged);
 		minChanged = 0;
 	}
 	handleInput();
-
-//	byte moved = stepperDoStep(&X) || stepperDoStep(&Y) || stepperDoStep(&Z) || stepperDoStep(&E);
-//	if (moved) {
-//		blink();
-//	}
 
 	delay(stepDelay/1000);
 //	delayMicroseconds(stepDelay); // !! delayMicroseconds doesn't work
