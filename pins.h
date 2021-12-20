@@ -7,9 +7,9 @@
 // D2  = PB2
 // D3  = PB3 , OC0A
 // D4  = PB4 , OC0B
-// D5  = PB5
-// D6  = PB6
-// D7  = PB7
+// D5  = PB5 , MOSI
+// D6  = PB6 , MISO
+// D7  = PB7 , SCK
 
 // D8  = PD0
 // D9  = PD1

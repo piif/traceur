@@ -111,7 +111,9 @@ void setup(void) {
 	Serial.println();
 
 	moveSetup();
-	servoSetup(12 /*SERVO*/);
+
+	pinMode(12, OUTPUT);
+	servoSetup(SERVO);
 
 	pinMode(DEBUG_PIN, OUTPUT);
 	digitalWrite(DEBUG_PIN, HIGH);
@@ -122,6 +124,8 @@ void setup(void) {
 
 	penUp();
 	goOrigin();
+
+	Serial.println("init end");
 }
 
 void loop() {
