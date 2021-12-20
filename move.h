@@ -15,6 +15,6 @@ void moveStatus();
 
 void moveOf(int dx, int dy, boolean force = false) ;
 
-void goOrigin();
+void moveToOrigin();
 
 #endif // HAVE_MOVE_H

@@ -17,6 +17,7 @@ void stepperMoveOf(Stepper *s, int v);
 // do one step , return 1 if a step was actually done
 byte stepperDoStep(Stepper *s);
 
+
 // initialize a stepper pair. Works also if enabled pin is shared
 void stepperInit(Stepper *X, Stepper *Y,
 		byte x_enable_pin, byte x_dir_pin, byte x_step_pin,
@@ -26,5 +27,15 @@ void stepperMoveOf(Stepper *X, Stepper *Y,
 		int dx, int dy);
 
 byte stepperDoStep(Stepper *X, Stepper *Y);
+
+
+// prepare a move sequence
+void stepperPrepare(Stepper *X, Stepper *Y, boolean backwardX, boolean backwardY);
+
+// do one step on X and/or Y
+void stepperOneStep(Stepper *X, Stepper *Y, boolean stepX, boolean stepY);
+
+// end a move sequence
+void stepperEnd(Stepper *X, Stepper *Y);
 
 #endif // HAVE_STEPPER_H

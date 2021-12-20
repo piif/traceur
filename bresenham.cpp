@@ -1,21 +1,4 @@
-// https://fr.wikipedia.org/wiki/Algorithme_de_trac%C3%A9_de_segment_de_Bresenham#:~:text=L'algorithme%20de%20trac%C3%A9%20de,attach%C3%A9%20%C3%A0%20une%20console%20texte.
-
-// procédure tracerSegment(entier x1, entier y1, entier x2, entier y2) est
-//   déclarer entier dx, dy ;
-//   déclarer entier e ; // valeur d’erreur
-//   e  ← x2 - x1 ;        // -e(0,1)
-//   dx ← e × 2 ;          // -e(0,1)
-//   dy ← (y2 - y1) × 2 ;  // e(1,0)
-//   tant que x1 ≤ x2 faire
-//     tracerPixel(x1, y1) ;
-//     x1 ← x1 + 1 ;  // colonne du pixel suivant
-//     si (e ← e - dy) ≤ 0 alors  // erreur pour le pixel suivant de même rangée
-//       y1 ← y1 + 1 ;  // choisir plutôt le pixel suivant dans la rangée supérieure
-//       e ← e + dx ;  // ajuste l’erreur commise dans cette nouvelle rangée
-//     fin si ;
-//   fin faire ;
-//   // Le pixel final (x2, y2) n’est pas tracé.
-// fin procédure ;
+// from https://fr.wikipedia.org/wiki/Algorithme_de_trac%C3%A9_de_segment_de_Bresenham#:~:text=L'algorithme%20de%20trac%C3%A9%20de,attach%C3%A9%20%C3%A0%20une%20console%20texte.
 
 int DX, DY, E, Count;
 char inverted, incrX, incrY;
@@ -67,19 +50,20 @@ void bresenhamStart(int dx, int dy, char *_incrX, char *_incrY) {
 	}
 }
 
-void bresenhamStep(char *_incrX, char *_incrY) {
+char bresenhamStep(char *_incrX, char *_incrY) {
 	char s=simpleBresenhamStep();
 	if (s == -1) {
 		*_incrX = *_incrY = 0;
-		return;
+		return -1;
 	}
 	if (inverted) {
-		*_incrY = incrY;
 		*_incrX = s ? incrX : 0;
+		*_incrY = incrY;
 	} else {
 		*_incrX = incrX;
 		*_incrY = s ? incrY : 0;
 	}
+	return 0;
 }
 
 #ifdef TEST

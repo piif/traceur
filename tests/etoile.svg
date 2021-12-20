@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:docname="etoile.svg"
+   inkscape:version="0.92+devel unknown"
+   width="500mm"
+   height="500mm"
+   viewBox="0 0 499.99999 499.99999"
+   version="1.1"
+   id="svg8">
+  <sodipodi:namedview
+     scale-x="1"
+     units="mm"
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.12664016"
+     inkscape:cx="1810.0395"
+     inkscape:cy="1313.9826"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <defs
+     id="defs2" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,202.99998)"
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <path
+       inkscape:connector-curvature="0"
+       id="path10"
+       d="M 303.62361,251.34449 203.58598,175.46259 105.1934,253.46568 146.44808,134.87549 41.85763,65.402901 l 125.53445,2.589202 33.75211,-120.93958 36.32988,120.19033 125.4504,-5.27216 -103.08136,71.692557 z"
+       inkscape:transform-center-y="-15.588135"
+       inkscape:transform-center-x="0.55761588"
+       style="color:#000000;overflow:visible;vector-effect:none;fill:none;fill-rule:evenodd;stroke:#444444;stroke-width:0.98864937;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke" />
+    <g
+       id="g1499" />
+  </g>
+  <defs
+     id="defs1527">
+    <marker
+       style="overflow:visible"
+       refY="-1.687441"
+       refX="-4"
+       orient="auto"
+       id="CheckToolsAndOPMarker">
+      <path
+         id="path1524"
+         style="fill:#000044;fill-rule:evenodd;stroke:none"
+         d="m -4.588864,-1.687441 v 0 L -9.177728,0 c 0.73311,-0.996261 0.728882,-2.359329 0,-3.374882"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <defs
+     id="defs1532">
+    <marker
+       style="overflow:visible"
+       refY="-1.687441"
+       refX="-4"
+       orient="auto"
+       id="DrawCurveMarker">
+      <path
+         id="path1529"
+         style="fill:#000044;fill-rule:evenodd;stroke:none"
+         d="m -4.588864,-1.687441 v 0 L -9.177728,0 c 0.73311,-0.996261 0.728882,-2.359329 0,-3.374882"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <defs
+     id="defs1537">
+    <marker
+       style="overflow:visible"
+       refY="-1.687441"
+       refX="4"
+       orient="auto"
+       id="DrawCurveMarker_r">
+      <path
+         id="path1534"
+         style="fill:#000044;fill-rule:evenodd;stroke:none"
+         d="m 4.588864,-1.687441 v 0 L 9.177728,0 c -0.73311,-0.996261 -0.728882,-2.359329 0,-3.374882"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <defs
+     id="defs1542">
+    <marker
+       style="overflow:visible"
+       refY="-1.687441"
+       refX="-4"
+       orient="auto"
+       id="InOutPathMarker">
+      <path
+         id="path1539"
+         style="fill:#0072a7;fill-rule:evenodd;stroke:none"
+         d="m -4.588864,-1.687441 v 0 L -9.177728,0 c 0.73311,-0.996261 0.728882,-2.359329 0,-3.374882"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+</svg>

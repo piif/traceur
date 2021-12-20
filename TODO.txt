@@ -1,12 +1,44 @@
 * remettre enable en début/fin de mouvement -> évite des saccades ?
-- gestion du servo
+
+* gestion du servo
 	- version avec la lib qui va bien pour tester
 	- version manuelle
+
 - gestion des timers :
 	- voir si on sait modifier setInterval en micros
 	- valider s'il y a un setTimeout
 	- faire une version basée sur un timer interupt ?
-- verifier l'allure des timers du 644 : idem Arduino ?
-  + lesquels sont utilisés par le système (micros/millis, delay)
-  + valider la fréquence d'horloge
-- en fonction des timers réservés, voir quelles pattes sont PWM
+
+* verifier l'allure des timers du 644 : idem Arduino ?
+  + lesquels sont utilisés par le système (micros/millis, delay) => 0 ?
+  + valider la fréquence d'horloge => 12.5MHz ??
+
+* en fonction des timers réservés, voir quelles pattes sont PWM
+
+* Bresenham
+  * algo sous forme d'itérateur
+  * généralisation aux 8 octants
+
+- GCode ?
+  générer un gcode :
+  * depuis Inkspace, avec un object transormé en "path" on peut l'exporter via extensions->gcode tools->export
+  * ça génère un gcode dans le répertoire destination avec :
+    - M3 (start tool), M5 (stop tool), M2 (fin)
+    - G20 (pouces), G21 (mm)
+    - G00 (rapide) et G01 (linéaire) avec X, Y, Z = position absolue en flottants et F=vitesse
+      => Z >0 ou <0 comme critère pour baisser/lever le crayon 
+  - comme on sait qu'on a 500x500 steps, prendre ça comme unité de référence, plutôt qe les mm ?
+    quitte à prendre le pt comme unité dans le svg ?
+    => en fait, l'export prend une échelle incompréhenbible... la référence de 100 générée par l'extension fait 354mm ??
+    => à revoir avec une version plus récente ...
+
+  interpréter du GCode :
+  * https://create.arduino.cc/projecthub/tinkersprojects/g-code-arduino-library-1a2bd6
+    + https://github.com/tinkersprojects/G-Code-Arduino-Library
+    + exemple basique : https://github.com/tinkersprojects/G-Code-Arduino-Library/blob/master/examples/SimplePlotter_withMotor/SimplePlotter_withMotor.ino
+
+    - le principe consite à définir des callbacks pour des commandes (G0, M2, ..) et envoyer du GCode dans le Serial (ou autre)
+    - un callback default permet de gérer les commandes "autres" ?
+ 
+ - modifier arddude pour permettre la lecture d'un fichier avec une tempo
+   - !read filename delayInMs

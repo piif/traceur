@@ -106,3 +106,41 @@ byte stepperDoStep(Stepper *X, Stepper *Y) {
 
 	return 1;
 }
+
+// prepare a move sequence
+void stepperPrepare(Stepper *X, Stepper *Y, boolean backwardX, boolean backwardY) {
+	digitalWrite(X->dir_pin, backwardX);
+	digitalWrite(Y->dir_pin, backwardY);
+
+	digitalWrite(X->enable_pin, 0);
+	if (X->enable_pin != Y->enable_pin) {
+		digitalWrite(Y->enable_pin, 0);
+	}
+}
+
+// do one step on X and/or Y
+void stepperOneStep(Stepper *X, Stepper *Y, boolean stepX, boolean stepY) {
+	if (stepX) {
+		digitalWrite(X->step_pin, 1);
+	}
+	if (stepY) {
+		digitalWrite(Y->step_pin, 1);
+	}
+	delay(1);
+	if (stepX) {
+		digitalWrite(X->step_pin, 0);
+	}
+	if (stepY) {
+		digitalWrite(Y->step_pin, 0);
+	}
+	delay(1);
+}
+
+// end a move sequence
+void stepperEnd(Stepper *X, Stepper *Y) {
+	digitalWrite(X->enable_pin, 1);
+	if (X->enable_pin != Y->enable_pin) {
+		digitalWrite(Y->enable_pin, 1);
+	}
+}
+

@@ -1,5 +1,6 @@
 #include "move.h"
 #include "stepper.h"
+#include "bresenham.h"
 
 #define readMinX() (digitalRead(X_MIN_PIN) == 0)
 #define readMinY() (digitalRead(Y_MIN_PIN) == 0)
@@ -14,33 +15,42 @@ int minChanged = 0;
 int posX = MAX_X + 1, posY = MAX_Y + 1;
 
 void moveOf(int dx, int dy, boolean force) {
-	if (!force) {
-		if (posX + dx < 0) {
-			dx = -posX;
-		} else if (posX + dx > MAX_X) {
-			dx = MAX_X - posX;
-		}
-		if (posY + dy < 0) {
-			dy = -posY;
-		} else if (posY + dy > MAX_Y) {
-			dy = MAX_Y - posY;
-		}
-		posX += dx;
-		posY += dy;
+	if (force) {
+		stepperMoveOf(&X, &Y, dx, dy);
+		while(stepperDoStep(&X, &Y));
+		return;
 	}
-	stepperMoveOf(&X, &Y, dx, dy);
-	// TODO : add speed + Bresenham
-	while(stepperDoStep(&X, &Y));
+
+	if (posX + dx < 0) {
+		dx = -posX;
+	} else if (posX + dx > MAX_X) {
+		dx = MAX_X - posX;
+	}
+	if (posY + dy < 0) {
+		dy = -posY;
+	} else if (posY + dy > MAX_Y) {
+		dy = MAX_Y - posY;
+	}
+	posX += dx;
+	posY += dy;
+
+	char incrX, incrY;
+	bresenhamStart(dx, dy, &incrX, &incrY);
+	stepperPrepare(&X, &Y, incrX < 0, incrY < 0);
+	while(bresenhamStep(&incrX, &incrY) == 0) {
+		stepperOneStep(&X, &Y, incrX != 0, incrY != 0);
+	}
+	stepperEnd(&X, &Y);
 }
 
-void goOrigin() {
+void moveToOrigin() {
 	if (minX) {
 		moveOf(50, 0, true);
 	}
 	if (minY) {
 		moveOf(0, 50, true);
 	}
-	moveOf(-500, -500);
+	moveOf(-500, -500, true); // will stop on min detection
 	posX = 0;
 	posY = 0;
 }
