@@ -157,6 +157,10 @@ F = (  5,  40)
 G = ( 49,  10)
 
 a = Arc()
-a.arc(g, F, G, O, 'orange')
-a.arc(g, G, B, O, 'blue')
-a.arc(g, B, F, O, 'red')
+a.arcCW(g, F, G, O, 'orange')
+a.arcCCW(g, F, G, O, 'pink')
+a.arcCW(g, G, B, O, 'blue')
+a.arcCCW(g, G, B, O, 'purple')
+a.arcCW(g, B, F, O, 'red')
+a.arcCCW(g, B, F, O, 'black')
+

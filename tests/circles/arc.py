@@ -96,13 +96,24 @@ class Arc:
         g.drawAt(x0, y0, 'yellow')
         g.drawAt(x1, y1, 'green')
 
-    def arc(self, g, P0, P1, Pc = (0,0), color = 'black'):
+    def arcCW(self, g, P0, P1, Pc = (0,0), color = 'black'):
+        self.arc(g, P0, P1, Pc, True, color)
+
+    def arcCCW(self, g, P0, P1, Pc = (0,0), color = 'black'):
+        self.arc(g, P0, P1, Pc, False, color)
+
+    def arc(self, g, P0, P1, Pc = (0,0), clockwise = True, color = 'black'):
         (x0, y0) = P0
         (x1, y1) = P1
         (xc, yc) = Pc
 
-        PP0 = (x0 - xc, y0 - yc)
-        PP1 = (x1 - xc, y1 - yc)
+        # Counter clockwise -> invert x
+        if clockwise:
+            PP0 = (x0 - xc, y0 - yc)
+            PP1 = (x1 - xc, y1 - yc)
+        else:
+            PP0 = (xc - x0, y0 - yc)
+            PP1 = (xc - x1, y1 - yc)
 
         todo = self.splitArc(PP0, PP1)
         g.moveTo(x0, y0)
@@ -143,15 +154,28 @@ class Arc:
                 if dx == 0 and dy == 0:
                     break
                 if part == 0:
-                    g.moveOf( dx,  dy)
+                    if clockwise:
+                        g.moveOf( dx,  dy)
+                    else:
+                        g.moveOf(-dx,  dy)
                 elif part == 1:
-                    g.moveOf( dy, -dx)
+                    if clockwise:
+                        g.moveOf( dy, -dx)
+                    else:
+                        g.moveOf(-dy, -dx)
                 elif part == 2:
-                    g.moveOf(-dx, -dy)
+                    if clockwise:
+                        g.moveOf(-dx, -dy)
+                    else:
+                        g.moveOf( dx, -dy)
                 elif part == 3:
-                    g.moveOf(-dy,  dx)
+                    if clockwise:
+                        g.moveOf(-dy,  dx)
+                    else:
+                        g.moveOf( dy,  dx)
             g.draw('yellow')
 
         g.drawAt(xc, yc, 'green')
         g.drawAt(x0, y0, 'yellow')
         g.drawAt(x1, y1, 'green')
+    
