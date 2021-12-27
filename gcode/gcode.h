@@ -13,7 +13,7 @@
 #define gcode_Buffer_version 2.1
 
 #ifndef gcode_Buffer_size
-    #define gcode_Buffer_size 5
+    #define gcode_Buffer_size 10
 #endif 
 
 

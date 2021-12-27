@@ -8,8 +8,9 @@ class Grille:
     X = 0
     Y = 0
 
-    def __init__(self, root, size):
+    def __init__(self, root, size, pixelSize=6):
         self.size = size
+        self.pixelSize = pixelSize
         self.winSize = (size * 2 + 2) * self.pixelSize
         self.center = (self.winSize - self.pixelSize) / 2
 

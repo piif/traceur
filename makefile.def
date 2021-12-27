@@ -3,3 +3,4 @@ UPLOAD_PORT := /dev/ttyUSB1
 PORT := /dev/ttyUSB0
 LIBRARY_PATH := /home/pif/GitHub/piif/ArduinoTools ${PROJECT_DIR}
 ARDDUDE_OPTIONS := -l lf -o raw -d
+CFLAGS=-Dgcode_Buffer_size=7

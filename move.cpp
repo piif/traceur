@@ -1,6 +1,7 @@
 #include "move.h"
 #include "stepper.h"
 #include "bresenham.h"
+#include "arc.h"
 
 #define readMinX() (digitalRead(X_MIN_PIN) == 0)
 #define readMinY() (digitalRead(Y_MIN_PIN) == 0)
@@ -8,7 +9,7 @@
 Stepper X, Y /*, Z, E*/;
 
 boolean minX = 0, minY = 0;
-#define BOUNCE_DELAY 2000
+#define BOUNCE_DELAY 10000
 long minXchangeTTL = 0, minYchangeTTL= 0;
 int minChanged = 0;
 
@@ -33,6 +34,8 @@ void moveOf(int dx, int dy, boolean force) {
 	}
 	posX += dx;
 	posY += dy;
+	Serial.print(" -> dx, X : "); Serial.print(dx);Serial.print(", ");Serial.println(posX);
+	Serial.print("    dy, Y : "); Serial.print(dy);Serial.print(", ");Serial.println(posY);
 
 	char incrX, incrY;
 	bresenhamStart(dx, dy, &incrX, &incrY);
@@ -55,6 +58,18 @@ void moveToOrigin() {
 	posY = 0;
 }
 
+void moveArc(int x0, int y0, int x1, int y1, int xc, int yc, boolean clockwise) {
+	int incrX, incrY;
+	arcStart(x0, y0, x1, y1, xc, yc, clockwise);
+	while(arcStep(&incrX, &incrY) == 0) {
+		Serial.print(" step "); Serial.print(incrX); Serial.print(" , "); Serial.println(incrY);
+		stepperPrepare(&X, &Y, incrX < 0, incrY < 0);
+		stepperOneStep(&X, &Y, incrX != 0, incrY != 0);
+	}
+	stepperEnd(&X, &Y);
+	posX = x1;
+	posY = y1;
+}
 
 void checkMin() {
 	cli();
@@ -74,7 +89,7 @@ void checkMin() {
 	if (minYchangeTTL < now) {
 		byte m = readMinY();
 		if (m != minY) {
-			minY = !minY;
+			minY = m;
 			if (minY == 1) {
 				Y.toMove = 0;
 				posY = 0;
@@ -104,6 +119,7 @@ void moveStatus() {
 
 	Serial.print("min X : "); Serial.println(minX);
 	Serial.print("min Y : "); Serial.println(minY);
+	Serial.print("minCh : "); Serial.println(minChanged);
 //	Serial.print("min Z : "); Serial.println(digitalRead(Z_MIN_PIN));
 }
 

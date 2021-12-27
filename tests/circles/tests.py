@@ -5,7 +5,7 @@ from arc import Arc
 
 def init():
     root = Tk()
-    g = Grille(root, 50)
+    g = Grille(root, 200, 3)
     return g
 
 
@@ -157,10 +157,11 @@ F = (  5,  40)
 G = ( 49,  10)
 
 a = Arc()
-a.arcCW(g, F, G, O, 'orange')
-a.arcCCW(g, F, G, O, 'pink')
-a.arcCW(g, G, B, O, 'blue')
-a.arcCCW(g, G, B, O, 'purple')
-a.arcCW(g, B, F, O, 'red')
-a.arcCCW(g, B, F, O, 'black')
+# a.arcCW(g, F, G, (10, 10), 'orange')
+# a.arcCCW(g, F, G, (10, 10), 'pink')
+# a.arcCW(g, G, B, O, 'blue')
+# a.arcCCW(g, G, B, O, 'purple')
+# a.arcCW(g, B, F, (-15, -20), 'red')
+# a.arcCCW(g, B, F, (-15, -20), 'black')
 
+a.arcCW(g, (154 , -64), (105 , -105), (32 , 29), 'black')

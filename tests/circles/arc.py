@@ -20,16 +20,10 @@ class Arc:
         qi = self.quadrant(P0)
         qf = self.quadrant(P1)
         if qi == qf:
-            if x0 < x1:
-                if qi == 0 or qi == 3:
-                    return [ qi ]
-                else:
-                    return [ qi, (qi+1)%4, (qi+2)%4, (qi+3)%4, qi ]
+            if x0*y1 < y0*x1:
+                return [ qi ]
             else:
-                if qi == 1 or qi == 2:
-                    return [ qi ]
-                else:
-                    return [ qi, (qi+1)%4, (qi+2)%4, (qi+3)%4, qi ]
+                return [ qi, (qi+1)%4, (qi+2)%4, (qi+3)%4, qi ]
         else:
             l = [ qi ]
             while qi != qf:

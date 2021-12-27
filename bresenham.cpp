@@ -1,3 +1,5 @@
+#include "bresenham.h"
+
 // from https://fr.wikipedia.org/wiki/Algorithme_de_trac%C3%A9_de_segment_de_Bresenham#:~:text=L'algorithme%20de%20trac%C3%A9%20de,attach%C3%A9%20%C3%A0%20une%20console%20texte.
 
 int DX, DY, E, Count;

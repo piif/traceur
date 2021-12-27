@@ -5,7 +5,6 @@
 
 #define GCODE_MODE
 
-
 #ifdef GCODE_MODE
 #  include "gcode.h"
 extern gcode GCode;
@@ -60,6 +59,8 @@ void penUp(boolean force = false) {
 	delay(500);
 	servoSetMicros(2600);
 	penIsUp = 1;
+	servoSetMicros(0);
+	delay(200);
 }
 
 void penDown(boolean force = false) {
@@ -69,6 +70,7 @@ void penDown(boolean force = false) {
 	}
 	servoSetMicros(1800);
 	delay(500);
+	servoSetMicros(0);
 	penIsUp = 0;
 }
 
@@ -106,8 +108,7 @@ void home() {
 	moveToOrigin();
 }
 
-void moveTo() {
-	Serial.println("moveTo");
+void movePen() {
     if(GCode.availableValue('Z')) {
     	double z = GCode.GetValue('Z');
     	if (z > 0 && !penIsUp) {
@@ -117,6 +118,11 @@ void moveTo() {
     		penDown();
     	}
     }
+}
+
+void moveTo() {
+	Serial.println("moveTo");
+	movePen();
 
     double x, y;
     if(GCode.availableValue('X')) {
@@ -129,8 +135,39 @@ void moveTo() {
     } else {
     	y = posY;
     }
-	Serial.print(" -> moveOf "); Serial.print(x - posX); Serial.print(" , "); Serial.print(y - posY);
+	Serial.print(" -> moveOf "); Serial.print(x - posX); Serial.print(" , "); Serial.println(y - posY);
     moveOf(x - posX , y - posY);
+}
+
+void arc(boolean clockwise) {
+	Serial.print("arc ");Serial.println(clockwise);
+	movePen();
+    double x=posX, y=posY, i=0, j=0;
+
+    if(GCode.availableValue('X')) {
+    	x = GCode.GetValue('X');
+    }
+    if(GCode.availableValue('Y')) {
+    	y = GCode.GetValue('Y');
+    }
+    if(GCode.availableValue('I')) {
+    	i = GCode.GetValue('I');
+    }
+    if(GCode.availableValue('J')) {
+    	j = GCode.GetValue('J');
+    }
+    Serial.print(" -> moveArc "); Serial.print(posX); Serial.print(" , "); Serial.println(posY);
+	Serial.print("        ->  "); Serial.print((int)x); Serial.print(" , "); Serial.println((int)y);
+	Serial.print("        c=  "); Serial.print((int)(posX+i)); Serial.print(" , "); Serial.println((int)(posY+j));
+    moveArc(posX, posY, x, y, posX+i, posY+j, clockwise);
+}
+
+void arcCCW() {
+	arc(0);
+}
+
+void arcCW() {
+	arc(1);
 }
 
 void defaultCallback() {
@@ -148,7 +185,9 @@ commandscallback commands[] = {
 		{ "G28", home },
 		{ "M114", status },
 		{ "G0" , moveTo },
-		{ "G1" , moveTo }
+		{ "G1" , moveTo },
+		{ "G2" , arcCW },
+		{ "G3" , arcCCW }
 };
 gcode GCode(sizeof(commands)/sizeof(commands[0]), commands, defaultCallback);
 
