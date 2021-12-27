@@ -27,7 +27,7 @@
     - G20 (pouces), G21 (mm)
     - G00 (rapide) et G01 (linéaire) avec X, Y, Z = position absolue en flottants et F=vitesse
       => Z >0 ou <0 comme critère pour baisser/lever le crayon 
-  - comme on sait qu'on a 500x500 steps, prendre ça comme unité de référence, plutôt qe les mm ?
+  - comme on sait qu'on a 500x500 steps, prendre ça comme unité de référence, plutôt que les mm ?
     quitte à prendre le pt comme unité dans le svg ?
     => en fait, l'export prend une échelle incompréhenbible... la référence de 100 générée par l'extension fait 354mm ??
     => à revoir avec une version plus récente ...
@@ -40,5 +40,6 @@
     - le principe consite à définir des callbacks pour des commandes (G0, M2, ..) et envoyer du GCode dans le Serial (ou autre)
     - un callback default permet de gérer les commandes "autres" ?
  
- - modifier arddude pour permettre la lecture d'un fichier avec une tempo
-   - !read filename delayInMs
+ * modifier arddude pour permettre la lecture d'un fichier avec une tempo
+   * !read filename delayInMs
+ 
