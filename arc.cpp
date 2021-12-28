@@ -1,4 +1,6 @@
 #include "arc.h"
+// #define COROUTINE_WITH_LONG_JUMP
+#include "coroutines.h"
 
 byte quadrant(int x, int y) {
     if (x>=0) {
@@ -16,53 +18,55 @@ byte quadrant(int x, int y) {
     }
 }
 
-struct _arcQ0 {
+typedef struct _arcQ0 {
 	int x, y, x1, y1, r, d;
 	long E;
 	boolean sign;
-} arcQ0;
+} ArcQ0;
 
-void arcStartQ0(int x0, int y0, int x1, int y1) {
-	Serial.print("   Q0 ");Serial.print(x0);Serial.print(",");Serial.println(y0);
-	Serial.print("   -> ");Serial.print(x1);Serial.print(",");Serial.println(y1);
+void arcStartQ0(ArcQ0 *arcQ0, int x0, int y0, int x1, int y1) {
 
-	arcQ0.x = x0;
-	arcQ0.y = y0;
-	arcQ0.x1 = x1;
-	arcQ0.y1 = y1;
+	arcQ0->x = x0;
+	arcQ0->y = y0;
+	arcQ0->x1 = x1;
+	arcQ0->y1 = y1;
 
     int r2 = x0*x0 + y0*y0;
-    arcQ0.r = round( sqrt(r2) );
+    arcQ0->r = round( sqrt(r2) );
 
-    arcQ0.E = (long)x1*y0 - (long)y1*x0;
-    arcQ0.sign = (arcQ0.E > 0);
+    arcQ0->E = (long)x1*y0 - (long)y1*x0;
+    arcQ0->sign = (arcQ0->E > 0);
 
-    arcQ0.d = arcQ0.r - 1;
+    arcQ0->d = arcQ0->r - 1;
+
+    Serial.print("   Q0 ");Serial.print(arcQ0->x);Serial.print(",");Serial.println(arcQ0->y);
+	Serial.print("   -> ");Serial.print(arcQ0->x1);Serial.print(",");Serial.println(arcQ0->y1);
+    Serial.print("r,d,E ");Serial.print(arcQ0->r);Serial.print(",");Serial.print(arcQ0->d);Serial.print(",");Serial.println(arcQ0->E);
 }
 
-char arcStepQ0(int *incrX, int *incrY) {
-	if ( arcQ0.E == 0 || arcQ0.sign != (arcQ0.E > 0) ) {
+char arcStepQ0(ArcQ0 *arcQ0, int *incrX, int *incrY) {
+	if ( arcQ0->E == 0 || arcQ0->sign != (arcQ0->E > 0) ) {
 		*incrX = *incrY = 0;
 		return -1;
-	} else if ( arcQ0.d >= 2 * arcQ0.x ) {
-		arcQ0.d = arcQ0.d - 2 * arcQ0.x - 1;
-		arcQ0.x = arcQ0.x + 1;
-		arcQ0.E -= arcQ0.y1;
+	} else if ( arcQ0->d >= 2 * arcQ0->x ) {
+		arcQ0->d = arcQ0->d - 2 * arcQ0->x - 1;
+		arcQ0->x = arcQ0->x + 1;
+		arcQ0->E -= arcQ0->y1;
 		*incrX = 1;
 		*incrY = 0;
 		return 0;
-	} else if ( arcQ0.d < 2 * (arcQ0.r - arcQ0.y) ) {
-		arcQ0.d = arcQ0.d + 2 * arcQ0.y - 1;
-		arcQ0.y = arcQ0.y - 1;
-		arcQ0.E -= arcQ0.x1;
+	} else if ( arcQ0->d < 2 * (arcQ0->r - arcQ0->y) ) {
+		arcQ0->d = arcQ0->d + 2 * arcQ0->y - 1;
+		arcQ0->y = arcQ0->y - 1;
+		arcQ0->E -= arcQ0->x1;
 		*incrX = 0;
 		*incrY = -1;
 		return 0;
 	} else {
-		arcQ0.d = arcQ0.d + 2 * (arcQ0.y - arcQ0.x - 1);
-		arcQ0.y = arcQ0.y - 1;
-		arcQ0.x = arcQ0.x + 1;
-		arcQ0.E -= arcQ0.x1 + arcQ0.y1;
+		arcQ0->d = arcQ0->d + 2 * (arcQ0->y - arcQ0->x - 1);
+		arcQ0->y = arcQ0->y - 1;
+		arcQ0->x = arcQ0->x + 1;
+		arcQ0->E -= arcQ0->x1 + arcQ0->y1;
 		*incrX = 1;
 		*incrY = -1;
 		return 0;
@@ -76,7 +80,6 @@ typedef struct _arcPart {
 } ArcPart;
 
 ArcPart arcPart[5];
-char currentQ = 0;
 byte lastQ;
 
 void initArcPart(ArcPart *arcPart, byte qd, boolean clockwise) {
@@ -84,38 +87,42 @@ void initArcPart(ArcPart *arcPart, byte qd, boolean clockwise) {
 	arcPart->y0 = 0;
 	arcPart->x1 = 1;
 	arcPart->y1 = 0;
+
 	switch (qd) {
 	case 0:
-		arcPart->dx = clockwise ? 1 : -1;
+		arcPart->dx = 1;
 		arcPart->dy = 1;
 		arcPart->invert = 0;
 	break;
 	case 1:
-		arcPart->dx = -1;
-		arcPart->dy = clockwise ? 1 : -1;
+		arcPart->dx = 1;
+		arcPart->dy = -1;
 		arcPart->invert = 1;
 	break;
 	case 2:
-		arcPart->dx = clockwise ? -1 : 1;
+		arcPart->dx = -1;
 		arcPart->dy = -1;
 		arcPart->invert = 0;
 	break;
 	case 3:
-		arcPart->dx = 1;
-		arcPart->dy = clockwise ? -1 : 1;
+		arcPart->dx = -1;
+		arcPart->dy = 1;
 		arcPart->invert = 1;
 	break;
+	}
+	if (!clockwise) {
+		arcPart->invert = 1-arcPart->invert;
 	}
 }
 
 void computeArcCoord(ArcPart *arcPart, int xSrc, int ySrc, int *xDst, int *yDst, boolean init = 0) {
 	if (arcPart->invert) {
 		if (init) {
-			*xDst = ySrc * arcPart->dx;
-			*yDst = xSrc * arcPart->dy;
-		} else {
 			*xDst = ySrc * arcPart->dy;
 			*yDst = xSrc * arcPart->dx;
+		} else {
+			*xDst = ySrc * arcPart->dx;
+			*yDst = xSrc * arcPart->dy;
 		}
 	} else {
 		*xDst = xSrc * arcPart->dx;
@@ -130,9 +137,9 @@ void computeArcCoord(ArcPart *arcPart, int xSrc, int ySrc, int *xDst, int *yDst,
 // - clockwise or counterclockwise
 // incrX and incrY are filled with 1 or -1 to detail if x or y have to go forward or backward
 void arcStart(int x0, int y0, int x1, int y1, int xc, int yc, boolean clockwise) {
-	int xx0 = clockwise ? x0 - xc : xc - x0;
+	int xx0 = x0 - xc;
 	int yy0 = y0 - yc;
-	int xx1 = clockwise ? x1 - xc : xc - x1;
+	int xx1 = x1 - xc;
 	int yy1 = y1 - yc;
 
 	byte qi = quadrant(xx0, yy0);
@@ -145,7 +152,7 @@ void arcStart(int x0, int y0, int x1, int y1, int xc, int yc, boolean clockwise)
 	computeArcCoord(&arcPart[0], xx0, yy0, &(arcPart[0].x0), &(arcPart[0].y0), 1);
 	if (qi == qf) {
 		Serial.print(" vect ");Serial.print((long)xx0*yy1);Serial.print(",");Serial.println((long)yy0*xx1);
-		if ((long)xx0*yy1 > (long)yy0*xx1) {
+		if (((long)xx0*yy1 > (long)yy0*xx1) == clockwise) {
 			for (byte i = 1; i <= 4; i++) {
 				initArcPart(&arcPart[i], (qi+i) % 4, clockwise);
 			}
@@ -157,7 +164,7 @@ void arcStart(int x0, int y0, int x1, int y1, int xc, int yc, boolean clockwise)
 		lastQ = 0;
 		do {
 			lastQ++;
-			qi = (qi + 1) % 4;
+			qi = (qi + (clockwise ? 1 : 3)) % 4; // -1 + 4 = 3
 			initArcPart(&arcPart[lastQ], qi, clockwise);
 		} while (qi != qf);
 	}
@@ -169,7 +176,6 @@ void arcStart(int x0, int y0, int x1, int y1, int xc, int yc, boolean clockwise)
 		Serial.print("    d ");Serial.print((int)(arcPart[i].dx));Serial.print(",");Serial.println((int)(arcPart[i].dy));
 		Serial.print("  inv ");Serial.println(arcPart[i].invert);
 	}
-	currentQ = -1;
 }
 
 // After each call to arcStep, incrX and incrY are filled with :
@@ -178,27 +184,32 @@ void arcStart(int x0, int y0, int x1, int y1, int xc, int yc, boolean clockwise)
 // -1 : backward move
 // Furthermore, this function returns -1 if drawing is ended, 0 else
 char arcStep(int *incrX, int *incrY) {
-	if (currentQ == -1) {
-		currentQ = 0;
-		ArcPart *a = &(arcPart[currentQ]);
-		arcStartQ0(a->x0, a->y0, a->x1, a->y1);
-	} else if (currentQ > lastQ) {
-		*incrX = *incrY = 0;
-		return -1;
-	}
-	char r = arcStepQ0(incrX, incrY);
-	if (r == -1) {
-		currentQ++;
-		if (currentQ > lastQ) {
-			*incrX = *incrY = 0;
-			return -1;
+	static ArcPart *a;
+	static byte currentQ;
+	static int step;
+	static ArcQ0 arcQ0;
+
+	CO_BEGIN;
+
+	a = &(arcPart[0]);
+	arcStartQ0(&arcQ0, a->x0, a->y0, a->x1, a->y1);
+	currentQ = 0;
+	for(;;) {
+		step = 0;
+		while(arcStepQ0(&arcQ0, incrX, incrY) != -1) {
+			step++;
+			computeArcCoord(a, *incrX, *incrY, incrX, incrY);
+			CO_RETURN(0);
 		}
-		ArcPart *a = &(arcPart[currentQ]);
-		arcStartQ0(arcQ0.y, arcQ0.x, a->x1, a->y1);
-		r = arcStepQ0(incrX, incrY);
+		Serial.print(" Q0 steps:");Serial.println(step);
+		if (currentQ >= lastQ) {
+			break;
+		}
+		currentQ++;
+		a = &(arcPart[currentQ]);
+		arcStartQ0(&arcQ0, arcQ0.y, arcQ0.x, a->x1, a->y1);
 	}
-	computeArcCoord(&arcPart[currentQ], *incrX, *incrY, incrX, incrY);
-	return r;
+	CO_END(-1);
 }
 
 #ifdef SIMULATE
@@ -236,6 +247,12 @@ int main(int argc, char **argv) {
 	while(arcStep(&dx, &dy) != -1) {
 		Serial.print("move ");Serial.print(dx);Serial.print(" , ");Serial.println(dy);
 	}
+
+//	arcStart(x0, y0, x1, y1, xc, yc, 1-clockwise);
+//	while(arcStep(&dx, &dy) != -1) {
+////		Serial.print("move ");Serial.print(dx);Serial.print(" , ");Serial.println(dy);
+//	}
+
 	return 0;
 }
 #endif

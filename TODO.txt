@@ -50,11 +50,16 @@
    - à chaque ligne reçues du peer, si le sémaphore est posé et que la ligne matche, lever le sémaphore
    - prévoir une commande pour annuler la lecture ("!read cancel" ?)
  
- - modifier le principe des steps pour utiliser des setjmp à la place, afin d'avoir un code plus linéaire
-   - vérifier que ça existe en arduino
-   - le coder en mode simulation
-     - macro coroutine qui génère une fonction préfixée par un longjmp
-     - macro yield qui génère un "setjmp else return"
-   - adapter le code
+ * modifier le principe des steps pour utiliser des setjmp à la place, afin d'avoir un code plus linéaire
+   * vérifier que ça existe en arduino
+   * le coder en mode simulation
+     * macro coroutine qui génère une fonction préfixée par un longjmp
+       => marche pas, mais ok avec des switch/case
+     * macro yield qui génère un "setjmp else return"
+   * adapter le code
  
+ - mettre X,Y à jour dnas move.cpp 0 chaque step, pour éviter les décalages
+ - gérer les débordements de cette manière (ne pas déplacer en X s'il déborde, mais mettre à jour la valeur,
+   afin de revenir à la bonne position  quand on revient dans la plage autorisée)
+   - nécessite de comparer les < et > vs les +/-1 des steps => gros nid de "if"
  
