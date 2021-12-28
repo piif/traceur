@@ -19,7 +19,7 @@
   * algo sous forme d'itérateur
   * généralisation aux 8 octants
 
-- GCode ?
+* GCode ?
   générer un gcode :
   * depuis Inkspace, avec un object transormé en "path" on peut l'exporter via extensions->gcode tools->export
   * ça génère un gcode dans le répertoire destination avec :
@@ -27,10 +27,11 @@
     - G20 (pouces), G21 (mm)
     - G00 (rapide) et G01 (linéaire) avec X, Y, Z = position absolue en flottants et F=vitesse
       => Z >0 ou <0 comme critère pour baisser/lever le crayon 
-  - comme on sait qu'on a 500x500 steps, prendre ça comme unité de référence, plutôt que les mm ?
+  * comme on sait qu'on a 500x500 steps, prendre ça comme unité de référence, plutôt que les mm ?
     quitte à prendre le pt comme unité dans le svg ?
     => en fait, l'export prend une échelle incompréhenbible... la référence de 100 générée par l'extension fait 354mm ??
     => à revoir avec une version plus récente ...
+    -> en truandant avec un "scale de 1771 sur une grille de 500, on s'en sort
 
   interpréter du GCode :
   * https://create.arduino.cc/projecthub/tinkersprojects/g-code-arduino-library-1a2bd6
@@ -42,4 +43,18 @@
  
  * modifier arddude pour permettre la lecture d'un fichier avec une tempo
    * !read filename delayInMs
+ 
+ - modifier arddude pour pouvoir remplacer la tempo par un marqueur d'ACK
+   - !read filename "phrase..."
+   - un sémaphore est posé après chaque ligne
+   - à chaque ligne reçues du peer, si le sémaphore est posé et que la ligne matche, lever le sémaphore
+   - prévoir une commande pour annuler la lecture ("!read cancel" ?)
+ 
+ - modifier le principe des steps pour utiliser des setjmp à la place, afin d'avoir un code plus linéaire
+   - vérifier que ça existe en arduino
+   - le coder en mode simulation
+     - macro coroutine qui génère une fonction préfixée par un longjmp
+     - macro yield qui génère un "setjmp else return"
+   - adapter le code
+ 
  

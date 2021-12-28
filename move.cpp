@@ -61,12 +61,15 @@ void moveToOrigin() {
 void moveArc(int x0, int y0, int x1, int y1, int xc, int yc, boolean clockwise) {
 	int incrX, incrY;
 	arcStart(x0, y0, x1, y1, xc, yc, clockwise);
+	int steps = 0;
 	while(arcStep(&incrX, &incrY) == 0) {
-		Serial.print(" step "); Serial.print(incrX); Serial.print(" , "); Serial.println(incrY);
+//		Serial.print(" step "); Serial.print(incrX); Serial.print(" , "); Serial.println(incrY);
 		stepperPrepare(&X, &Y, incrX < 0, incrY < 0);
 		stepperOneStep(&X, &Y, incrX != 0, incrY != 0);
+		steps++;
 	}
 	stepperEnd(&X, &Y);
+	Serial.print(" steps:"); Serial.println(steps);
 	posX = x1;
 	posY = y1;
 }

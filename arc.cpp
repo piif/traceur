@@ -17,7 +17,8 @@ byte quadrant(int x, int y) {
 }
 
 struct _arcQ0 {
-	int x, y, x1, y1, r, E, d;
+	int x, y, x1, y1, r, d;
+	long E;
 	boolean sign;
 } arcQ0;
 
@@ -33,7 +34,7 @@ void arcStartQ0(int x0, int y0, int x1, int y1) {
     int r2 = x0*x0 + y0*y0;
     arcQ0.r = round( sqrt(r2) );
 
-    arcQ0.E = x1*y0 - y1*x0;
+    arcQ0.E = (long)x1*y0 - (long)y1*x0;
     arcQ0.sign = (arcQ0.E > 0);
 
     arcQ0.d = arcQ0.r - 1;

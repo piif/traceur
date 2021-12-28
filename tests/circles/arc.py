@@ -20,6 +20,7 @@ class Arc:
         qi = self.quadrant(P0)
         qf = self.quadrant(P1)
         if qi == qf:
+            print "vect", x0*y1, y0*x1
             if x0*y1 < y0*x1:
                 return [ qi ]
             else:
@@ -97,6 +98,7 @@ class Arc:
         self.arc(g, P0, P1, Pc, False, color)
 
     def arc(self, g, P0, P1, Pc = (0,0), clockwise = True, color = 'black'):
+        print "arc", P0, P1, Pc, clockwise
         (x0, y0) = P0
         (x1, y1) = P1
         (xc, yc) = Pc
@@ -140,10 +142,12 @@ class Arc:
                 Pto = (1,0)
             i+=1
 
-            print part, Pfrom, Pto
+            print "part", part, Pfrom, Pto
             self.initArcQ0(Pfrom, Pto)
+            steps = 0
             while True :
                 g.draw(color)
+                steps += 1
                 (dx, dy) = self.stepArcQ0()
                 if dx == 0 and dy == 0:
                     break
@@ -167,9 +171,8 @@ class Arc:
                         g.moveOf(-dy,  dx)
                     else:
                         g.moveOf( dy,  dx)
-            g.draw('yellow')
+            g.draw(color)
+            print steps, "steps"
 
-        g.drawAt(xc, yc, 'green')
-        g.drawAt(x0, y0, 'yellow')
-        g.drawAt(x1, y1, 'green')
+        g.line([P0, Pc, P1], 'gray')
     
