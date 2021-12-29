@@ -44,11 +44,12 @@
  * modifier arddude pour permettre la lecture d'un fichier avec une tempo
    * !read filename delayInMs
  
- - modifier arddude pour pouvoir remplacer la tempo par un marqueur d'ACK
-   - !read filename "phrase..."
-   - un sémaphore est posé après chaque ligne
-   - à chaque ligne reçues du peer, si le sémaphore est posé et que la ligne matche, lever le sémaphore
-   - prévoir une commande pour annuler la lecture ("!read cancel" ?)
+ * modifier arddude pour pouvoir remplacer la tempo par un marqueur d'ACK
+   * !read filename "phrase..."
+   * un sémaphore est posé après chaque ligne
+   * à chaque ligne reçues du peer, si le sémaphore est posé et que la ligne matche, lever le sémaphore
+   * prévoir une commande pour annuler la lecture ("!read cancel" ?)
+     => timeout
  
  * modifier le principe des steps pour utiliser des setjmp à la place, afin d'avoir un code plus linéaire
    * vérifier que ça existe en arduino
